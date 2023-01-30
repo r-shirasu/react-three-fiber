@@ -3,7 +3,7 @@ import { Three } from './Three';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" style={{ width: "100vw", height: "100vh" }}>
       <Three />
     </div>
   );

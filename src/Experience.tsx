@@ -1,4 +1,4 @@
-import { OrbitControls, PivotControls, TransformControls } from '@react-three/drei';
+import { Html, OrbitControls, PivotControls, TransformControls, Text } from '@react-three/drei';
 import { useRef } from 'react';
 import { Mesh } from 'three';
 
@@ -20,9 +20,10 @@ export default function Experience() {
         scale={100}
         fixed={true}
       >
-        <mesh position-x={-2} scale={2}>
+        <mesh position-x={-2}>
           <sphereGeometry />
           <meshStandardMaterial color="orange" />
+          <Html>That's a sphere 👍</Html>
         </mesh>
       </PivotControls>
 
@@ -37,6 +38,17 @@ export default function Experience() {
         <planeGeometry />
         <meshStandardMaterial color="greenyellow" />
       </mesh>
+
+        <Text
+            font="./Bangers-Regular.ttf"
+            fontSize={ 1 }
+            color="salmon"
+            position-y={ 2 }
+            maxWidth={ 2 }
+            textAlign="center"
+        >
+            I LOVE R3F
+        </Text>
     </>
   );
 }
