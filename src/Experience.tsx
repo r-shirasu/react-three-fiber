@@ -1,42 +1,36 @@
+import { useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useControls, button } from 'leva';
+import { useRef } from 'react';
 import { Perf } from 'r3f-perf';
+import { Mesh } from 'three';
 
 export default function Experience() {
-  const { position, color, visible, perfVisible } = useControls('sphere', {
-    position: {
-      value: { x: -2, y: 0 },
-      step: 0.01,
-      joystick: 'invertY',
-    },
-    color: '#ff0000',
-    visible: true,
-    myInterval: {
-      min: 0,
-      max: 10,
-      value: [4, 5],
-    },
-    clickMe: button(() => {
-      console.info('ok');
-    }),
-    choice: { options: ['a', 'b', 'c'] },
-    perfVisible: true,
+  const cubeRef = useRef<Mesh>(null);
+
+  useFrame((state, delta) => {
+    const cube = cubeRef.current;
+    if (!cube) {
+      return;
+    }
+
+    cube.rotation.y += delta * 0.2;
   });
 
   return (
     <>
-      {perfVisible && <Perf position="top-left" />}
+      <Perf position="top-left" />
+
       <OrbitControls makeDefault />
 
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
       <ambientLight intensity={0.5} />
 
-      <mesh visible={visible} position={[position.x, position.y, 0]}>
+      <mesh position-x={-2}>
         <sphereGeometry />
-        <meshStandardMaterial color={color} />
+        <meshStandardMaterial color="orange" />
       </mesh>
 
-      <mesh position-x={2} scale={1.5}>
+      <mesh ref={cubeRef} position-x={2} scale={1.5}>
         <boxGeometry />
         <meshStandardMaterial color="mediumpurple" />
       </mesh>

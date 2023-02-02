@@ -1,14 +1,19 @@
 import '../../../Downloads/44-debug-a-r3f-application/src/style.css';
+import './style.scss';
 
 import { Canvas } from '@react-three/fiber';
 import Experience from './Experience';
 import { StrictMode } from 'react';
-import { Leva } from 'leva';
+import * as THREE from 'three'
 
 export const Three = () => {
+    const created = ({ scene }) =>
+    {
+        scene.background = new THREE.Color('#ff0000')
+    }
+
   return (
     <StrictMode>
-      <Leva />
       <Canvas
         camera={{
           fov: 45,
@@ -16,6 +21,7 @@ export const Three = () => {
           far: 200,
           position: [-4, 3, 6],
         }}
+        onCreated={created}
       >
         <Experience />
       </Canvas>
