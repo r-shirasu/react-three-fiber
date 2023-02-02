@@ -4,14 +4,8 @@ import './style.scss';
 import { Canvas } from '@react-three/fiber';
 import Experience from './Experience';
 import { StrictMode } from 'react';
-import * as THREE from 'three'
 
 export const Three = () => {
-    const created = ({ scene }) =>
-    {
-        scene.background = new THREE.Color('#ff0000')
-    }
-
   return (
     <StrictMode>
       <Canvas
@@ -19,10 +13,10 @@ export const Three = () => {
           fov: 45,
           near: 0.1,
           far: 200,
-          position: [-4, 3, 6],
+          position: [1, 2, 6],
         }}
-        onCreated={created}
       >
+        <color args={['ivory']} attach="background" />
         <Experience />
       </Canvas>
     </StrictMode>
