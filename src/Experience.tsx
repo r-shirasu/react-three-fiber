@@ -5,11 +5,16 @@ import { useLoader } from '@react-three/fiber';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 
 export default function Experience() {
-  const model = useLoader(GLTFLoader, './hamburger-draco.glb', (loader) => {
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('./draco/');
-    loader.setDRACOLoader(dracoLoader);
-  });
+    const model = useLoader(
+        GLTFLoader,
+        './FlightHelmet/glTF/FlightHelmet.gltf',
+        (loader) =>
+        {
+            const dracoLoader = new DRACOLoader()
+            dracoLoader.setDecoderPath('./draco/')
+            loader.setDRACOLoader(dracoLoader)
+        }
+    )
 
   console.info(model);
   return (
@@ -26,7 +31,7 @@ export default function Experience() {
         <meshStandardMaterial color="greenyellow" />
       </mesh>
 
-      <primitive object={model.scene} scale={0.35} />
+        <primitive object={ model.scene } scale={ 5 } position-y={ - 1 } />
     </>
   );
 }
