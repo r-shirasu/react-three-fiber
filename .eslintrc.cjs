@@ -21,5 +21,6 @@ module.exports = {
     ],
     "rules": {
         'no-console': ['error', { allow : ['info'] }],
-    }
+        '@typescript-eslint/no-non-null-assertion' : 'off'
+    },
 }

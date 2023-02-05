@@ -9,14 +9,14 @@ export const Three = () => {
   return (
     <StrictMode>
       <Canvas
+        shadows
         camera={{
           fov: 45,
           near: 0.1,
-          far: 200,
-          position: [1, 2, 6],
+          far: 50,
+          position: [-4, 3, 6],
         }}
       >
-        <color args={['ivory']} attach="background" />
         <Experience />
       </Canvas>
     </StrictMode>
