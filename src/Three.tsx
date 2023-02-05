@@ -9,7 +9,7 @@ export const Three = () => {
   return (
     <StrictMode>
       <Canvas
-        shadows
+        shadows={false}
         camera={{
           fov: 45,
           near: 0.1,
