@@ -1,50 +1,72 @@
-import { OrbitControls } from '@react-three/drei';
-import { useControls, button } from 'leva';
+import { useMatcapTexture, Center, Text3D, OrbitControls } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
+import { useEffect, useRef} from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { BufferGeometry, Material, Mesh } from 'three';
+
+const torusGeometry = new THREE.TorusGeometry(1, 0.6, 16, 32);
+const material = new THREE.MeshMatcapMaterial();
 
 export default function Experience() {
-  const { position, color, visible, perfVisible } = useControls('sphere', {
-    position: {
-      value: { x: -2, y: 0 },
-      step: 0.01,
-      joystick: 'invertY',
-    },
-    color: '#ff0000',
-    visible: true,
-    myInterval: {
-      min: 0,
-      max: 10,
-      value: [4, 5],
-    },
-    clickMe: button(() => {
-      console.info('ok');
-    }),
-    choice: { options: ['a', 'b', 'c'] },
-    perfVisible: true,
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const donuts = useRef<Mesh<BufferGeometry, Material | Material[]> | any>([]);
+
+  const [matcapTexture] = useMatcapTexture('7B5254_E9DCC7_B19986_C8AC91', 256);
+
+  useFrame((state, delta) => {
+    for (const donut of donuts.current) {
+      if (!donut) {
+        return;
+      }
+      donut.rotation.y += delta * 0.2;
+    }
   });
+
+  useEffect(() => {
+    matcapTexture.encoding = THREE.sRGBEncoding;
+    matcapTexture.needsUpdate = true;
+
+    material.matcap = matcapTexture;
+    material.needsUpdate = true;
+  }, [matcapTexture]);
 
   return (
     <>
-      {perfVisible && <Perf position="top-left" />}
+      <Perf position="top-left" />
+
       <OrbitControls makeDefault />
 
-      <directionalLight position={[1, 2, 3]} intensity={1.5} />
-      <ambientLight intensity={0.5} />
+      <Center>
+        <Text3D
+          material={material}
+          font="./fonts/helvetiker_regular.typeface.json"
+          size={0.75}
+          height={0.2}
+          curveSegments={12}
+          bevelEnabled
+          bevelThickness={0.02}
+          bevelSize={0.02}
+          bevelOffset={0}
+          bevelSegments={5}
+        >
+          HELLO R3F
+        </Text3D>
+      </Center>
 
-      <mesh visible={visible} position={[position.x, position.y, 0]}>
-        <sphereGeometry />
-        <meshStandardMaterial color={color} />
-      </mesh>
-
-      <mesh position-x={2} scale={1.5}>
-        <boxGeometry />
-        <meshStandardMaterial color="mediumpurple" />
-      </mesh>
-
-      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
-        <planeGeometry />
-        <meshStandardMaterial color="greenyellow" />
-      </mesh>
+      {[...Array(100)].map((value, index) => (
+        <mesh
+          ref={(element) => (donuts.current[index] = element)}
+          key={index}
+          geometry={torusGeometry}
+          material={material}
+          position={[(Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10]}
+          scale={0.2 + Math.random() * 0.2}
+          rotation={[Math.random() * Math.PI, Math.random() * Math.PI, 0]}
+        >
+          <torusGeometry args={[1, 0.6, 16, 32]} />
+        </mesh>
+      ))}
     </>
   );
 }
