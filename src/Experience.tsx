@@ -1,4 +1,4 @@
-import { Center, OrbitControls, useGLTF, useTexture } from '@react-three/drei';
+import { Center, OrbitControls, Sparkles, useGLTF, useTexture } from '@react-three/drei';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 
@@ -41,6 +41,8 @@ export default function Experience() {
         >
           <meshBasicMaterial color="#ffffff" />
         </mesh>
+
+        <Sparkles size={6} scale={[4, 2, 4]} position-y={1} speed={0.2} count={40} />
       </Center>
     </>
   );
