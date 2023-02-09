@@ -1,50 +1,47 @@
-import { OrbitControls } from '@react-three/drei';
-import { useControls, button } from 'leva';
-import { Perf } from 'r3f-perf';
+import { Center, OrbitControls, useGLTF, useTexture } from '@react-three/drei';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as THREE from 'three';
 
+type GLTFResult = GLTF & {
+  nodes: {
+    baked: THREE.Mesh;
+    poleLightA: THREE.Mesh;
+    poleLightB: THREE.Mesh;
+    portalLight: THREE.Mesh;
+  };
+};
 export default function Experience() {
-  const { position, color, visible, perfVisible } = useControls('sphere', {
-    position: {
-      value: { x: -2, y: 0 },
-      step: 0.01,
-      joystick: 'invertY',
-    },
-    color: '#ff0000',
-    visible: true,
-    myInterval: {
-      min: 0,
-      max: 10,
-      value: [4, 5],
-    },
-    clickMe: button(() => {
-      console.info('ok');
-    }),
-    choice: { options: ['a', 'b', 'c'] },
-    perfVisible: true,
-  });
+  const { nodes } = useGLTF('./model/portal.glb') as unknown as GLTFResult;
+  const bakedTexture = useTexture('./model/baked.jpg');
+  bakedTexture.flipY = false;
 
   return (
     <>
-      {perfVisible && <Perf position="top-left" />}
+      <color args={['#030202']} attach="background" />
+
       <OrbitControls makeDefault />
 
-      <directionalLight position={[1, 2, 3]} intensity={1.5} />
-      <ambientLight intensity={0.5} />
+      <Center>
+        <mesh geometry={nodes.baked.geometry}>
+          <meshBasicMaterial map={bakedTexture} />
+        </mesh>
 
-      <mesh visible={visible} position={[position.x, position.y, 0]}>
-        <sphereGeometry />
-        <meshStandardMaterial color={color} />
-      </mesh>
+        <mesh geometry={nodes.poleLightA.geometry} position={nodes.poleLightA.position}>
+          <meshBasicMaterial color="#ffffe5" />
+        </mesh>
 
-      <mesh position-x={2} scale={1.5}>
-        <boxGeometry />
-        <meshStandardMaterial color="mediumpurple" />
-      </mesh>
+        <mesh geometry={nodes.poleLightB.geometry} position={nodes.poleLightB.position}>
+          <meshBasicMaterial color="#ffffe5" />
+        </mesh>
 
-      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
-        <planeGeometry />
-        <meshStandardMaterial color="greenyellow" />
-      </mesh>
+        <mesh
+          geometry={nodes.portalLight.geometry}
+          position={nodes.portalLight.position}
+          rotation={nodes.portalLight.rotation}
+        >
+          <meshBasicMaterial color="#ffffff" />
+        </mesh>
+      </Center>
     </>
   );
 }
