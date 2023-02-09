@@ -1,50 +1,81 @@
-import { OrbitControls } from '@react-three/drei';
-import { useControls, button } from 'leva';
-import { Perf } from 'r3f-perf';
+import { Center, OrbitControls, shaderMaterial, Sparkles, useGLTF, useTexture } from '@react-three/drei';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as THREE from 'three';
+import portalVertexShader from './shaders/portal/vertex.glsl';
+import portalFragmentShader from './shaders/portal/fragment.glsl';
+import { extend, ReactThreeFiber, useFrame } from '@react-three/fiber';
+import { useRef } from 'react';
+import { ShaderMaterial } from 'three';
 
+type GLTFResult = GLTF & {
+  nodes: {
+    baked: THREE.Mesh;
+    poleLightA: THREE.Mesh;
+    poleLightB: THREE.Mesh;
+    portalLight: THREE.Mesh;
+  };
+};
+
+const PortalMaterial = shaderMaterial(
+  {
+    uTime: 0,
+    uColorStart: new THREE.Color('#ffffff'),
+    uColorEnd: new THREE.Color('#000000'),
+  },
+  portalVertexShader,
+  portalFragmentShader,
+);
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      portalMaterial: ReactThreeFiber.Object3DNode<ShaderMaterial, typeof ShaderMaterial>;
+    }
+  }
+}
+
+extend({ PortalMaterial });
 export default function Experience() {
-  const { position, color, visible, perfVisible } = useControls('sphere', {
-    position: {
-      value: { x: -2, y: 0 },
-      step: 0.01,
-      joystick: 'invertY',
-    },
-    color: '#ff0000',
-    visible: true,
-    myInterval: {
-      min: 0,
-      max: 10,
-      value: [4, 5],
-    },
-    clickMe: button(() => {
-      console.info('ok');
-    }),
-    choice: { options: ['a', 'b', 'c'] },
-    perfVisible: true,
+  const { nodes } = useGLTF('./model/portal.glb') as unknown as GLTFResult;
+  const bakedTexture = useTexture('./model/baked.jpg');
+  bakedTexture.flipY = false;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const portalMaterial = useRef<ShaderMaterial & { uTime: number }>(null!);
+
+  useFrame((state, delta) => {
+    portalMaterial.current.uTime += delta;
   });
 
   return (
     <>
-      {perfVisible && <Perf position="top-left" />}
+      <color args={['#030202']} attach="background" />
       <OrbitControls makeDefault />
 
-      <directionalLight position={[1, 2, 3]} intensity={1.5} />
-      <ambientLight intensity={0.5} />
+      <Center>
+        <mesh geometry={nodes.baked.geometry}>
+          <meshBasicMaterial map={bakedTexture} />
+        </mesh>
 
-      <mesh visible={visible} position={[position.x, position.y, 0]}>
-        <sphereGeometry />
-        <meshStandardMaterial color={color} />
-      </mesh>
+        <mesh geometry={nodes.poleLightA.geometry} position={nodes.poleLightA.position}>
+          <meshBasicMaterial color="#ffffe5" />
+        </mesh>
 
-      <mesh position-x={2} scale={1.5}>
-        <boxGeometry />
-        <meshStandardMaterial color="mediumpurple" />
-      </mesh>
+        <mesh geometry={nodes.poleLightB.geometry} position={nodes.poleLightB.position}>
+          <meshBasicMaterial color="#ffffe5" />
+        </mesh>
 
-      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
-        <planeGeometry />
-        <meshStandardMaterial color="greenyellow" />
-      </mesh>
+        <mesh
+          geometry={nodes.portalLight.geometry}
+          position={nodes.portalLight.position}
+          rotation={nodes.portalLight.rotation}
+        >
+          <portalMaterial ref={portalMaterial} />
+        </mesh>
+
+        <Sparkles size={6} scale={[4, 2, 4]} position-y={1} speed={0.2} count={40} />
+      </Center>
     </>
   );
 }
