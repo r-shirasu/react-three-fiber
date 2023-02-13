@@ -1,42 +1,56 @@
-import { OrbitControls } from '@react-three/drei';
-import { useControls, button } from 'leva';
-import { Perf } from 'r3f-perf';
+import { useFrame } from '@react-three/fiber';
+import { meshBounds, OrbitControls, useGLTF } from '@react-three/drei';
+import { useRef } from 'react';
+import { Mesh } from 'three';
 
 export default function Experience() {
-  const { position, color, visible, perfVisible } = useControls('sphere', {
-    position: {
-      value: { x: -2, y: 0 },
-      step: 0.01,
-      joystick: 'invertY',
-    },
-    color: '#ff0000',
-    visible: true,
-    myInterval: {
-      min: 0,
-      max: 10,
-      value: [4, 5],
-    },
-    clickMe: button(() => {
-      console.info('ok');
-    }),
-    choice: { options: ['a', 'b', 'c'] },
-    perfVisible: true,
+  const cube = useRef<Mesh>(null);
+
+  useFrame((state, delta) => {
+    if (!cube.current) {
+      return;
+    }
+    cube.current.rotation.y += delta * 0.2;
   });
+
+  const eventHandler = () => {
+    if (!cube.current) {
+      return;
+    }
+    cube.current.material.color.set(`hsl(${Math.random() * 360}, 100%, 75%)`);
+  };
+
+  const hamburger = useGLTF('./hamburger.glb');
 
   return (
     <>
-      {perfVisible && <Perf position="top-left" />}
       <OrbitControls makeDefault />
 
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
       <ambientLight intensity={0.5} />
 
-      <mesh visible={visible} position={[position.x, position.y, 0]}>
+      <mesh
+        position-x={-2}
+        onClick={(event) => event.stopPropagation()}
+        onPointerEnter={(event) => event.stopPropagation()}
+      >
         <sphereGeometry />
-        <meshStandardMaterial color={color} />
+        <meshStandardMaterial color="orange" />
       </mesh>
 
-      <mesh position-x={2} scale={1.5}>
+      <mesh
+        ref={cube}
+        raycast={meshBounds}
+        position-x={2}
+        scale={1.5}
+        onClick={eventHandler}
+        onPointerEnter={() => {
+          document.body.style.cursor = 'pointer';
+        }}
+        onPointerLeave={() => {
+          document.body.style.cursor = 'default';
+        }}
+      >
         <boxGeometry />
         <meshStandardMaterial color="mediumpurple" />
       </mesh>
@@ -45,6 +59,16 @@ export default function Experience() {
         <planeGeometry />
         <meshStandardMaterial color="greenyellow" />
       </mesh>
+
+      <primitive
+        object={hamburger.scene}
+        scale={0.25}
+        position-y={0.5}
+        onClick={(event) => {
+          console.log(event.object);
+          event.stopPropagation();
+        }}
+      />
     </>
   );
 }
