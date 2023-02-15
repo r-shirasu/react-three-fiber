@@ -3,12 +3,11 @@ import '../../../Downloads/44-debug-a-r3f-application/src/style.css';
 import { Canvas } from '@react-three/fiber';
 import Experience from './Experience';
 import { StrictMode } from 'react';
-import { Leva } from 'leva';
+import './styles.css';
 
 export const Three = () => {
   return (
     <StrictMode>
-      <Leva />
       <Canvas
         camera={{
           fov: 45,
@@ -16,6 +15,7 @@ export const Three = () => {
           far: 200,
           position: [-4, 3, 6],
         }}
+        style={{ touchAction: 'none' }}
       >
         <Experience />
       </Canvas>
