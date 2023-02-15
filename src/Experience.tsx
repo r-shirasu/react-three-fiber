@@ -1,7 +1,8 @@
 import { OrbitControls } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
-import { EffectComposer, SSR } from '@react-three/postprocessing';
+import { Bloom, DepthOfField, EffectComposer, Glitch, Noise, SSR, Vignette } from '@react-three/postprocessing';
 import { useControls } from 'leva';
+import { BlendFunction, GlitchMode } from 'postprocessing';
 
 export default function Experience() {
   const ssrProps = useControls('SSR Effect', {
@@ -40,6 +41,14 @@ export default function Experience() {
       <color args={['#ffffff']} attach="background" />
 
       <EffectComposer multisampling={4}>
+        <Vignette offset={0.3} darkness={0.9} blendFunction={BlendFunction.NORMAL} />
+        <Glitch delay={[0.5, 1]} duration={[0.1, 0.3]} strength={[0.2, 0.4]} mode={GlitchMode.CONSTANT_MILD} />
+        <Noise
+          // premultiply
+          blendFunction={BlendFunction.SOFT_LIGHT}
+        />
+        <Bloom intensity={1.0} luminanceThreshold={0.5} />
+        <DepthOfField focusDistance={0.025} focalLength={0.025} bokehScale={6} />
         <SSR {...ssrProps} />
       </EffectComposer>
 
