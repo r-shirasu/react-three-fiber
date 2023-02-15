@@ -1,7 +1,6 @@
 import { OrbitControls } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
-import { Bloom, EffectComposer, Noise, Vignette } from '@react-three/postprocessing';
-import { BlendFunction } from 'postprocessing';
+import { DepthOfField, EffectComposer } from '@react-three/postprocessing';
 
 export default function Experience() {
   return (
@@ -9,9 +8,7 @@ export default function Experience() {
       <color args={['#ffffff']} attach="background" />
 
       <EffectComposer multisampling={4}>
-        <Vignette offset={0.3} darkness={0.9} blendFunction={BlendFunction.NORMAL} />
-        <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} />
-        <Bloom mipmapBlur intensity={0.5} luminanceThreshold={0} />
+        <DepthOfField focusDistance={0.025} focalLength={0.025} bokehScale={6} />
       </EffectComposer>
 
       <Perf position="top-left" />
